@@ -1,0 +1,968 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>NATURESYNC — Jadikan Sekolahmu Laboratorium Sains</title>
+
+    <!-- Font & Tailwind (utility class) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- CSS: satu file per bagian -->
+    <style>
+      /* ===== base.css ===== */
+      /* BASE: variabel warna, reset, tipografi, tombol umum */
+      :root{
+        box-sizing:border-box;
+        padding-top:env(safe-area-inset-top,0px);
+        padding-bottom:env(safe-area-inset-bottom,0px);
+        --bg:#F3F5EF; --surface:#FFFFFF; --ink:#102016; --muted:#566559;
+        --line:#D8DFD3; --deep:#0E2A1B; --leaf:#4C9A5F; --lime:#C9E265;
+      }
+      html{scroll-behavior:smooth;scroll-padding-top:90px;-webkit-text-size-adjust:100%}
+      body{
+        margin:0; overflow-x:clip;
+        background:var(--bg); color:var(--ink);
+        font-family:'Inter Tight',system-ui,sans-serif; line-height:1.6;
+      }
+      h1,h2,h3{letter-spacing:-.035em;line-height:.98;font-weight:600}
+      .muted{color:var(--muted)}
+      a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{
+        outline:3px solid var(--lime);outline-offset:3px;
+      }
+      /* Tombol umum (dipakai di hero & formulir) */
+      .cta{display:inline-block;background:#fff;color:#0E2A1B;padding:.95rem 1.7rem;border-radius:999px;font-weight:600;transition:transform .15s}
+      .cta:hover{transform:scale(1.04)}
+      .cta--dark{background:var(--deep);color:#F3F5EF;border:0;cursor:pointer;justify-self:start}
+      @media (prefers-reduced-motion:reduce){
+        .cta{transition:none}
+        html{scroll-behavior:auto}
+      }
+      /* ===== navbar.css ===== */
+      /* NAVBAR: bar atas, menu pil (laptop), tombol hamburger & menu HP */
+      .topbar{
+        position:fixed;z-index:50;left:0;right:0;top:0;
+        padding:calc(env(safe-area-inset-top,0px) + 14px) 18px 14px;
+        display:flex;align-items:center;justify-content:space-between;
+        color:#fff;transition:background .3s;
+      }
+      .topbar.solid{background:rgba(14,42,27,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+      @media (min-width:768px){.topbar{padding-left:24px;padding-right:24px}}
+      
+      /* Menu pil (laptop/tablet) */
+      .pill{display:flex;gap:6px;padding:6px;border-radius:999px;background:rgba(255,255,255,.16);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+      .pill a{padding:.5rem 1rem;border-radius:999px;font-weight:500}
+      .pill a:hover{background:rgba(255,255,255,.2)}
+      @media (max-width:767px){.pill{display:none}}
+      
+      /* Hamburger & menu HP */
+      .burger{width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.16);display:grid;place-items:center;cursor:pointer;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+      .mnav{position:absolute;top:100%;left:12px;right:12px;margin-top:4px;padding:8px;border-radius:20px;background:rgba(14,42,27,.97);display:grid}
+      .mnav[hidden]{display:none}
+      .mnav a{padding:14px 16px;border-radius:12px;font-size:1.1rem;font-weight:500}
+      .mnav a:active{background:rgba(255,255,255,.14)}
+      @media (min-width:768px){.mnav{display:none!important}}
+      /* ===== hero.css ===== */
+      /* HERO: foto latar, judul, subjudul. Ganti foto: simpan sebagai foto/hero.jpg */
+      .hero{
+        position:relative;
+        min-height:100vh;min-height:100svh;
+        display:flex;flex-direction:column;justify-content:flex-end;align-items:center;
+        text-align:center;color:#fff;overflow:hidden;
+        background:#0E2A1B url("https://github.com/Ridd-dsgn/Naturesync/blob/main/foto/hero.jpg?raw=true") center/cover no-repeat;
+      }
+      .hero::after{ /* lapisan gelap agar teks terbaca */
+        content:"";position:absolute;inset:0;
+        background:linear-gradient(180deg,rgba(6,16,10,.55) 0,rgba(6,16,10,0) 28%,rgba(6,16,10,0) 45%,rgba(6,16,10,.82) 100%);
+      }
+      .hero>*:not(.topbar){position:relative;z-index:2}
+      .h1{font-size:clamp(2.5rem,7.5vw,6rem);line-height:.88;letter-spacing:-.055em;font-weight:600;text-wrap:balance}
+      .hero-sub{line-height:1.25;text-wrap:balance}
+      /* ===== fitur.css ===== */
+      /* FITUR: tiga kartu berwarna */
+      .fitur-bg{background:linear-gradient(180deg,var(--bg) 0,#E6F7F9 55%,#DDF3F6 100%)}
+      .fitur-title{line-height:.95}
+      
+      .fcard{border-radius:18px;padding:28px;display:flex;flex-direction:column;min-height:480px;color:#0E1A12;overflow:hidden}
+      @media (min-width:768px){.fcard{height:540px}}
+      @media (min-width:1024px){.fcard{height:560px}}
+      @media (max-width:480px){.fcard:not(.fcard--lime){padding:22px}}
+      .fcard--lime{background:#CBEF7E;padding:0}
+      .fcard--blue{background:#A5D8FF}
+      .fcard--sage{background:#C3D4C7}
+      
+      .fcard h3{font-size:clamp(2rem,3.2vw,2.8rem);line-height:.95;letter-spacing:-.04em;font-weight:500}
+      .fcard .no{font-size:1.05rem}
+      .fhead{display:flex;justify-content:space-between;gap:12px}
+      .fhead--pad{padding:28px 28px 20px}
+      .fhead--tight{gap:8px}
+      .fdesc{line-height:1.25;margin-top:auto}
+      .fchart{flex:1;max-height:230px}
+      .ico{width:42px;height:42px;border-radius:10px;background:#fff;display:grid;place-items:center;margin-top:10px;margin-left:auto}
+      
+      /* Slot foto (ilustrasi cadangan + <img> di atasnya) */
+      .ph{position:relative;overflow:hidden;border-radius:14px;flex:1}
+      .ph--flat{border-radius:0}
+      .ph svg,.ph img{position:absolute;inset:0;width:100%;height:100%}
+      .ph img{object-fit:cover}
+      .cap{position:absolute;left:14px;right:14px;bottom:14px;padding:14px 18px;border-radius:12px;background:rgba(20,30,22,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#fff;font-size:1.05rem;line-height:1.25}
+      @media (max-width:480px){.cap{font-size:.98rem;padding:12px 14px}}
+      
+      /* Kartu 03: foto di atas teks, di tablet berdampingan */
+      .c3row{display:flex;flex-direction:column;gap:18px;flex:1;min-height:0}
+      .c3ph{flex:0 0 230px;border-radius:12px}
+      .c3col{display:flex;flex-direction:column;flex:1;min-width:0}
+      @media (min-width:768px) and (max-width:1023px){.c3row{flex-direction:row}.c3ph{flex:0 0 42%}}
+      /* ===== cara-kerja.css ===== */
+      /* CARA KERJA: latar putih dan garis waktu 5 langkah */
+      .cara{background:var(--surface);border-block:1px solid var(--line)}
+      .tl li{position:relative;padding:0 0 2.2rem 2.6rem;border-left:2px solid var(--line);margin-left:.7rem}
+      .tl li::before{
+        content:"";position:absolute;left:-.62rem;top:.25rem;width:1.1rem;height:1.1rem;
+        border-radius:50%;background:var(--leaf);border:3px solid var(--bg);
+      }
+      /* ===== manfaat.css ===== */
+      /* MANFAAT: kartu guru & siswa */
+      .benefit--guru{background:var(--deep);color:#F3F5EF}
+      .benefit--siswa{background:var(--lime);color:#0E2A1B}
+      /* ===== daftar.css ===== */
+      /* DAFTAR: formulir pendaftaran */
+      .field{width:100%;padding:.9rem 1.1rem;border-radius:14px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit}
+      .form-msg{color:var(--leaf)}
+      .form-msg.is-error{color:#C2452B}
+      /* ===== footer.css ===== */
+      /* FOOTER */
+      .site-footer{background:var(--deep);color:#F3F5EF}
+      .footer-brand{letter-spacing:-.03em}
+
+      /* ===== simulator.css ===== */
+      .simulator-shell{
+        position:relative;overflow:hidden;background:#0b2116;color:#f3f5ef;
+        padding:clamp(4rem,8vw,7rem) 0;
+      }
+      .simulator-shell::before{
+        content:"";position:absolute;width:38rem;height:38rem;border-radius:50%;
+        top:-18rem;right:-12rem;background:rgba(201,226,101,.11);filter:blur(2px);
+      }
+      .simulator-shell::after{
+        content:"";position:absolute;width:28rem;height:28rem;border-radius:50%;
+        bottom:-17rem;left:-12rem;background:rgba(107,201,207,.12);filter:blur(4px);
+      }
+      .simulator-shell > *{position:relative;z-index:1}
+      .sim-kicker{display:flex;align-items:center;gap:.65rem;color:#c9e265;font-size:.78rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase}
+      .sim-kicker::before{content:"";width:2.2rem;height:1px;background:#c9e265}
+      .sim-title{color:#f3f5ef;max-width:48rem}
+      .sim-intro{color:#afc1b3;max-width:43rem}
+      .sim-live{display:inline-flex;align-items:center;gap:.55rem;padding:.55rem .85rem;border:1px solid rgba(201,226,101,.3);border-radius:999px;color:#dff28e;background:rgba(201,226,101,.08);font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+      .sim-live i{display:block;width:.48rem;height:.48rem;border-radius:50%;background:#c9e265;box-shadow:0 0 0 5px rgba(201,226,101,.13);animation:simPulse 1.8s infinite}
+      @keyframes simPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.55;transform:scale(.8)}}
+      .sim-layout{display:grid;grid-template-columns:minmax(250px,.78fr) minmax(0,1.55fr);gap:1rem;margin-top:2.8rem}
+      .sim-panel{border:1px solid rgba(218,236,221,.13);background:rgba(255,255,255,.065);border-radius:1.45rem;box-shadow:0 20px 60px rgba(0,0,0,.16);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+      .sim-controls{padding:1.25rem}
+      .sim-panel-title{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;margin-bottom:1rem}
+      .sim-panel-title small{display:block;color:#8ba495;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700}
+      .sim-panel-title strong{display:block;margin-top:.3rem;font-size:1.15rem;letter-spacing:-.03em}
+      .sim-zone-label{color:#c9e265;font-size:.78rem;font-weight:700;text-align:right}
+      .sim-zones{display:grid;grid-template-columns:repeat(2,1fr);gap:.55rem}
+      .sim-zone{min-height:4.5rem;padding:.75rem;border:1px solid rgba(218,236,221,.14);border-radius:1rem;background:rgba(0,0,0,.12);color:#dce9df;text-align:left;cursor:pointer;transition:transform .2s,border-color .2s,background .2s}
+      .sim-zone:hover{transform:translateY(-2px);border-color:rgba(201,226,101,.55)}
+      .sim-zone.is-active{border-color:#c9e265;background:rgba(201,226,101,.14);color:#fff}
+      .sim-zone span{display:block;font-size:1.25rem;line-height:1;margin-bottom:.4rem}
+      .sim-zone b{display:block;font-size:.82rem;font-weight:600}
+      .sim-zone em{display:block;margin-top:.15rem;color:#8ba495;font-size:.7rem;font-style:normal}
+      .sim-divider{height:1px;background:rgba(218,236,221,.12);margin:1.25rem 0}
+      .sim-section-label{display:flex;justify-content:space-between;align-items:center;margin-bottom:.8rem;color:#dce9df;font-size:.85rem;font-weight:700}
+      .sim-section-label span{color:#8ba495;font-size:.7rem;font-weight:500}
+      .sim-slider-row{margin:1rem 0}
+      .sim-slider-meta{display:flex;justify-content:space-between;gap:1rem;margin-bottom:.45rem;color:#b7cabb;font-size:.8rem}
+      .sim-slider-meta strong{color:#f3f5ef;font-weight:600}
+      .sim-range{width:100%;height:5px;appearance:none;border-radius:99px;background:linear-gradient(90deg,#c9e265 var(--range-fill,50%),rgba(255,255,255,.14) var(--range-fill,50%));outline:none;cursor:pointer}
+      .sim-range::-webkit-slider-thumb{appearance:none;width:18px;height:18px;border-radius:50%;border:3px solid #0b2116;background:#c9e265;box-shadow:0 0 0 4px rgba(201,226,101,.16)}
+      .sim-range::-moz-range-thumb{width:13px;height:13px;border-radius:50%;border:3px solid #0b2116;background:#c9e265;box-shadow:0 0 0 4px rgba(201,226,101,.16)}
+      .sim-presets{display:flex;flex-wrap:wrap;gap:.45rem}
+      .sim-preset{padding:.48rem .65rem;border:1px solid rgba(218,236,221,.16);border-radius:999px;background:transparent;color:#b7cabb;font:inherit;font-size:.73rem;cursor:pointer;transition:all .2s}
+      .sim-preset:hover,.sim-preset.is-active{border-color:#c9e265;background:rgba(201,226,101,.13);color:#f3f5ef}
+      .sim-class-lab{padding:1rem;border-radius:1rem;background:rgba(0,0,0,.16);border:1px solid rgba(218,236,221,.1)}
+      .sim-class-lab p{margin:.45rem 0 .7rem;color:#b7cabb;font-size:.78rem;line-height:1.45}
+      .sim-select{width:100%;padding:.7rem .75rem;border:1px solid rgba(218,236,221,.17);border-radius:.7rem;background:#173524;color:#f3f5ef;font:inherit;font-size:.8rem}
+      .sim-check{width:100%;margin-top:.55rem;padding:.68rem .8rem;border:0;border-radius:.7rem;background:#c9e265;color:#102016;font:inherit;font-size:.8rem;font-weight:700;cursor:pointer;transition:transform .2s,filter .2s}
+      .sim-check:hover{transform:translateY(-2px);filter:brightness(1.06)}
+      .sim-feedback{min-height:1.2rem;margin:.6rem 0 0;color:#c9e265;font-size:.76rem;line-height:1.35}
+      .sim-dashboard{padding:1.25rem}
+      .sim-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:.65rem}
+      .sim-metric{min-width:0;padding:.85rem .9rem;border-radius:1rem;background:rgba(255,255,255,.07);border:1px solid rgba(218,236,221,.1)}
+      .sim-metric small{display:block;overflow:hidden;color:#8ba495;font-size:.68rem;text-overflow:ellipsis;white-space:nowrap}
+      .sim-metric strong{display:block;margin-top:.3rem;color:#f3f5ef;font-size:clamp(1.2rem,2.4vw,1.8rem);letter-spacing:-.05em}
+      .sim-metric strong span{color:#8ba495;font-size:.7em;font-weight:500;letter-spacing:0}
+      .sim-metric i{display:block;width:1.5rem;height:2px;margin-top:.6rem;background:#c9e265}
+      .sim-chart-card{margin-top:.7rem;padding:1rem;border-radius:1.15rem;background:#f3f5ef;color:#102016}
+      .sim-chart-head{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;margin-bottom:.5rem}
+      .sim-chart-head small{display:block;color:#607366;font-size:.7rem;font-weight:700;letter-spacing:.11em;text-transform:uppercase}
+      .sim-chart-head strong{display:block;margin-top:.25rem;font-size:1.05rem;letter-spacing:-.035em}
+      .sim-chart-badge{padding:.4rem .55rem;border-radius:.5rem;background:#e4f1d2;color:#366039;font-size:.63rem;font-weight:800;letter-spacing:.08em;white-space:nowrap}
+      .sim-chart{display:block;width:100%;height:auto;overflow:visible}
+      .sim-chart .grid-line{stroke:#d8dfd3;stroke-width:1}
+      .sim-chart .axis-label{fill:#829087;font-size:11px;font-family:inherit}
+      .sim-chart .chart-area{fill:url(#simAreaGradient);opacity:.55}
+      .sim-chart .chart-line{fill:none;stroke:#3e9054;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+      .sim-chart .chart-dot{fill:#f3f5ef;stroke:#3e9054;stroke-width:3}
+      .sim-chart-note{margin:.15rem 0 0;color:#607366;font-size:.78rem}
+      .sim-bottom{display:grid;grid-template-columns:.9fr 1.35fr;gap:.7rem;margin-top:.7rem}
+      .sim-score-card,.sim-insight-card{min-height:9rem;padding:1rem;border-radius:1.15rem;border:1px solid rgba(218,236,221,.1);background:rgba(255,255,255,.07)}
+      .sim-card-eyebrow{color:#8ba495;font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+      .sim-score-wrap{display:flex;align-items:center;gap:.85rem;margin-top:.65rem}
+      .sim-score-ring{display:grid;place-items:center;width:4.5rem;height:4.5rem;border-radius:50%;background:conic-gradient(#c9e265 calc(var(--score,75) * 1%),rgba(255,255,255,.12) 0);position:relative}
+      .sim-score-ring::after{content:"";position:absolute;inset:6px;border-radius:50%;background:#142d1e}
+      .sim-score-ring strong{position:relative;z-index:1;font-size:1.25rem;letter-spacing:-.06em}
+      .sim-score-copy small{display:block;color:#8ba495;font-size:.7rem}
+      .sim-score-copy b{display:block;margin-top:.18rem;color:#dff28e;font-size:.9rem}
+      .sim-insight-card{background:linear-gradient(135deg,rgba(201,226,101,.16),rgba(107,201,207,.1))}
+      .sim-insight-card h3{margin:.4rem 0 .35rem;color:#f3f5ef;font-size:1.25rem;line-height:1.05}
+      .sim-insight-card p{margin:0;color:#b7cabb;font-size:.82rem;line-height:1.45}
+      .sim-insight-icon{float:right;display:grid;place-items:center;width:2rem;height:2rem;border-radius:.65rem;background:rgba(201,226,101,.16);color:#c9e265;font-size:1.1rem}
+      .sim-reset{display:inline-flex;align-items:center;gap:.4rem;margin-top:1rem;border:0;background:transparent;color:#9bb2a2;font:inherit;font-size:.75rem;cursor:pointer}
+      .sim-reset:hover{color:#c9e265}
+      .sim-footnote{margin-top:1rem;color:#789080;font-size:.72rem}
+      @media (max-width:900px){.sim-layout{grid-template-columns:1fr}.sim-controls{display:grid;grid-template-columns:1fr 1fr;gap:0 1.2rem}.sim-controls .sim-panel-title,.sim-controls .sim-divider,.sim-controls .sim-class-lab{grid-column:1/-1}.sim-controls .sim-divider{width:100%}}
+      @media (max-width:640px){.simulator-shell{padding-block:4rem}.sim-dashboard,.sim-controls{padding:.9rem}.sim-controls{display:block}.sim-metrics{grid-template-columns:repeat(2,1fr)}.sim-bottom{grid-template-columns:1fr}.sim-chart-card{padding:.8rem}.sim-live{font-size:.65rem}.sim-chart-head strong{font-size:.95rem}}
+      @media (prefers-reduced-motion:reduce){.sim-live i{animation:none}.sim-zone,.sim-check{transition:none}}
+    </style>
+  </head>
+  <body>
+    <!-- HERO -->
+    <header class="hero">
+      <div class="topbar">
+        <a
+          href="#"
+          class="flex items-center gap-2 font-semibold text-xl tracking-tight"
+          aria-label="NATURESYNC beranda"
+        >
+          <svg
+            width="30"
+            height="30"
+            viewBox="0 0 32 32"
+            fill="none"
+            stroke="#fff"
+            stroke-width="2.4"
+            stroke-linecap="round"
+            aria-hidden="true"
+          >
+            <circle cx="16" cy="16" r="4" />
+            <path
+              d="M16 3v6M16 23v6M3 16h6M23 16h6M7 7l4 4M21 21l4 4M25 7l-4 4M11 21l-4 4"
+            />
+          </svg>
+          NatureSync
+        </a>
+        <nav class="pill" aria-label="Navigasi utama">
+          <a href="#fitur">Fitur</a><a href="#simulasi">Simulasi</a
+          ><a href="#cara">Cara kerja</a><a href="#manfaat">Manfaat</a
+          ><a href="#daftar">Daftar</a>
+        </nav>
+        <a href="#kontak" class="font-medium hidden md:block">Kontak</a>
+        <button
+          class="burger md:hidden"
+          id="bb"
+          aria-label="Buka menu"
+          aria-expanded="false"
+          aria-controls="mnav"
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#fff"
+            stroke-width="2"
+            stroke-linecap="round"
+            aria-hidden="true"
+          >
+            <path id="bi" d="M4 7h16M4 12h16M4 17h16" />
+          </svg>
+        </button>
+        <nav class="mnav" id="mnav" aria-label="Menu seluler" hidden>
+          <a href="#fitur">Fitur</a><a href="#simulasi">Simulasi</a
+          ><a href="#cara">Cara kerja</a><a href="#manfaat">Manfaat</a
+          ><a href="#daftar">Daftar</a><a href="#kontak">Kontak</a>
+        </nav>
+      </div>
+
+      <div class="px-5 md:px-6 pt-28 pb-12 md:pb-16 max-w-5xl">
+        <h1 class="h1">Jadikan sekolahmu laboratorium sains</h1>
+        <p class="hero-sub mt-6 text-lg md:text-xl max-w-xl mx-auto">
+          Pasang sensor, baca datanya, dan temukan jawabannya sendiri, langsung
+          di halaman sekolahmu.
+        </p>
+        <a href="#daftar" class="cta mt-8">Mulai di sekolahku</a>
+      </div>
+    </header>
+
+    <main>
+      <!-- MASALAH -->
+      <section class="max-w-6xl mx-auto px-6 py-16 md:py-24">
+        <h2 class="text-4xl md:text-6xl max-w-4xl">
+          Skor sains kita 383. Rata-rata OECD 485.
+        </h2>
+        <p class="muted text-lg mt-6 max-w-2xl">
+          Data PISA 2022 menunjukkan literasi sains siswa Indonesia tertinggal
+          jauh. Salah satu sebabnya, laboratorium IPA mahal dan banyak sekolah
+          tidak mampu menyediakannya. NatureSync memakai ruang yang sudah ada:
+          kebun, pohon, taman, dan kolam sekolahmu.
+        </p>
+      </section>
+
+      <!-- FITUR -->
+      <section id="fitur" class="fitur-bg">
+        <div class="max-w-6xl mx-auto px-6 py-16 md:py-24">
+          <h2
+            class="fitur-title text-4xl md:text-6xl text-center max-w-3xl mx-auto"
+          >
+            Dibangun untuk sekolah yang ingin belajar dari data
+          </h2>
+          <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5 mt-10 md:mt-16">
+            <!-- 01 -->
+            <article class="fcard fcard--lime">
+              <div class="fhead fhead--pad">
+                <h3>Sensor<br />Node</h3>
+                <div class="text-right">
+                  <span class="no">(01)</span>
+                  <div class="ico">
+                    <svg
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="#0E1A12"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                    >
+                      <circle cx="12" cy="12" r="2.5" />
+                      <path
+                        d="M7.5 7.5a6.4 6.4 0 000 9M16.5 7.5a6.4 6.4 0 010 9M4.5 4.5a10.6 10.6 0 000 15M19.5 4.5a10.6 10.6 0 010 15"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <div class="ph ph--flat">
+                <svg
+                  viewBox="0 0 400 340"
+                  preserveAspectRatio="xMidYMid slice"
+                  aria-hidden="true"
+                >
+                  <rect width="400" height="340" fill="#14341f" />
+                  <g fill="#2F7A44">
+                    <circle cx="40" cy="60" r="46" />
+                    <circle cx="170" cy="30" r="52" />
+                    <circle cx="320" cy="70" r="50" />
+                    <circle cx="90" cy="190" r="56" />
+                    <circle cx="260" cy="200" r="58" />
+                    <circle cx="370" cy="290" r="50" />
+                    <circle cx="30" cy="310" r="48" />
+                  </g>
+                  <g fill="#F4F1E4">
+                    <circle cx="70" cy="120" r="7" />
+                    <circle cx="150" cy="90" r="6" />
+                    <circle cx="230" cy="130" r="7" />
+                    <circle cx="330" cy="150" r="6" />
+                    <circle cx="120" cy="250" r="7" />
+                    <circle cx="300" cy="260" r="6" />
+                  </g>
+                  <path d="M200 340V150" stroke="#E8EFE4" stroke-width="6" />
+                  <rect
+                    x="178"
+                    y="118"
+                    width="44"
+                    height="34"
+                    rx="6"
+                    fill="#E8EFE4"
+                  />
+                  <circle cx="200" cy="135" r="7" fill="#C9E265" />
+                </svg>
+                <img
+                  src="foto/kebun.jpg"
+                  alt="Siswa menyentuh tanaman di kebun sekolah"
+                  onerror="this.remove()"
+                />
+                <p class="cap">
+                  Ukur tanah, udara, dan cahaya di tiap zona setiap 15 menit
+                </p>
+              </div>
+            </article>
+
+            <!-- 02 -->
+            <article class="fcard fcard--blue">
+              <div class="fhead">
+                <h3>Digital<br />Twin</h3>
+                <div class="text-right">
+                  <span class="no">(02)</span>
+                  <div class="ico">
+                    <svg
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="#0E1A12"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path
+                        d="M3 7l9-4 9 4-9 4-9-4zM3 12l9 4 9-4M3 17l9 4 9-4"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <svg
+                viewBox="0 0 320 170"
+                class="fchart my-6 w-full"
+                role="img"
+                aria-label="Contoh grafik suhu dua zona"
+              >
+                <g stroke="#fff" stroke-opacity=".6">
+                  <path d="M0 30H320M0 85H320M0 140H320" />
+                </g>
+                <polyline
+                  points="0,120 50,105 100,80 150,50 200,40 250,55 320,70"
+                  fill="none"
+                  stroke="#0E1A12"
+                  stroke-width="3"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <polyline
+                  points="0,135 50,125 100,112 150,100 200,92 250,98 320,104"
+                  fill="none"
+                  stroke="#fff"
+                  stroke-width="3"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <circle cx="200" cy="40" r="6" fill="#0E1A12" />
+                <circle cx="200" cy="92" r="6" fill="#fff" />
+              </svg>
+              <p class="fdesc text-lg">
+                Bandingkan data antar zona di peta sekolah dan cari tahu kenapa
+                suhunya berbeda
+              </p>
+            </article>
+
+            <!-- 03 -->
+            <article class="fcard fcard--sage md:col-span-2 lg:col-span-1">
+              <div class="c3row">
+                <div class="ph c3ph">
+                  <svg
+                    viewBox="0 0 200 380"
+                    preserveAspectRatio="xMidYMid slice"
+                    aria-hidden="true"
+                  >
+                    <defs>
+                      <linearGradient id="pg" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0" stop-color="#8FC4A0" />
+                        <stop offset="1" stop-color="#2B5A3C" />
+                      </linearGradient>
+                    </defs>
+                    <rect width="200" height="380" fill="url(#pg)" />
+                    <circle cx="100" cy="150" r="42" fill="#F2D3B3" />
+                    <path
+                      d="M40 380c0-90 30-150 60-150s60 60 60 150z"
+                      fill="#1F3A2E"
+                    />
+                    <path
+                      d="M58 138c0-40 84-40 84 0-20-14-64-14-84 0z"
+                      fill="#3a2a1d"
+                    />
+                  </svg>
+                  <img
+                    src="foto/siswa.jpg"
+                    alt="Siswa mencatat tumbuhan di halaman sekolah"
+                    onerror="this.remove()"
+                  />
+                </div>
+                <div class="c3col">
+                  <div class="fhead fhead--tight">
+                    <h3>Citizen &amp; Kelas</h3>
+                    <div class="text-right">
+                      <span class="no">(03)</span>
+                      <div class="ico">
+                        <svg
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="#0E1A12"
+                          stroke-width="1.8"
+                          stroke-linecap="round"
+                        >
+                          <path
+                            d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6L5.6 18.4"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                  <p class="fdesc text-lg">
+                    Catat flora dan fauna lewat ponsel, lalu ubah jadi proyek
+                    belajar bersama guru
+                  </p>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- SIMULASI INTERAKTIF -->
+      <section id="simulasi" class="simulator-shell" aria-labelledby="sim-title">
+        <div class="max-w-6xl mx-auto px-6">
+          <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+            <div>
+              <p class="sim-kicker">NatureSync Live Lab</p>
+              <h2 id="sim-title" class="sim-title text-4xl md:text-6xl mt-5">
+                Lihat apa yang terjadi saat lingkungan berubah
+              </h2>
+              <p class="sim-intro text-lg mt-6">
+                Geser kondisi sensor, pilih zona sekolah, lalu baca responsnya
+                seperti peneliti. Ini adalah simulasi pembelajaran—bukan data
+                sensor asli—yang dirancang agar siswa berani membuat hipotesis.
+              </p>
+            </div>
+            <div class="sim-live" aria-live="polite"><i></i> Simulasi aktif</div>
+          </div>
+
+          <div class="sim-layout">
+            <aside class="sim-panel sim-controls" aria-label="Kontrol simulasi">
+              <div class="sim-panel-title">
+                <div>
+                  <small>01 / Pilih zona</small>
+                  <strong>Lingkungan sekolah</strong>
+                </div>
+                <span id="simZoneLabel" class="sim-zone-label">Kebun sayur</span>
+              </div>
+
+              <div class="sim-zones" role="tablist" aria-label="Pilih zona pengamatan">
+                <button class="sim-zone is-active" type="button" data-zone="garden" role="tab" aria-selected="true">
+                  <span>🌱</span><b>Kebun sayur</b><em>Tanah &amp; tanaman</em>
+                </button>
+                <button class="sim-zone" type="button" data-zone="pond" role="tab" aria-selected="false">
+                  <span>💧</span><b>Kolam bio</b><em>Air &amp; biota</em>
+                </button>
+                <button class="sim-zone" type="button" data-zone="park" role="tab" aria-selected="false">
+                  <span>🌳</span><b>Taman teduh</b><em>Pohon &amp; udara</em>
+                </button>
+                <button class="sim-zone" type="button" data-zone="field" role="tab" aria-selected="false">
+                  <span>☀️</span><b>Lapangan</b><em>Cahaya &amp; panas</em>
+                </button>
+              </div>
+
+              <div class="sim-divider"></div>
+
+              <div class="sim-section-label">02 / Atur kondisi <span>Real-time</span></div>
+              <div class="sim-slider-row">
+                <div class="sim-slider-meta"><label for="simLight">Intensitas cahaya</label><strong><span id="simLightValue">70</span>%</strong></div>
+                <input id="simLight" class="sim-range" type="range" min="0" max="100" value="70" aria-label="Intensitas cahaya" />
+              </div>
+              <div class="sim-slider-row">
+                <div class="sim-slider-meta"><label for="simMoisture">Kelembapan tanah</label><strong><span id="simMoistureValue">58</span>%</strong></div>
+                <input id="simMoisture" class="sim-range" type="range" min="0" max="100" value="58" aria-label="Kelembapan tanah" />
+              </div>
+              <div class="sim-slider-row">
+                <div class="sim-slider-meta"><label for="simAir">Partikel udara</label><strong><span id="simAirValue">28</span> AQI</strong></div>
+                <input id="simAir" class="sim-range" type="range" min="0" max="100" value="28" aria-label="Partikel udara" />
+              </div>
+
+              <div class="sim-slider-row">
+                <div class="sim-section-label">Coba skenario <span>Preset cepat</span></div>
+                <div class="sim-presets">
+                  <button class="sim-preset" type="button" data-scene="rain">🌧 Hujan deras</button>
+                  <button class="sim-preset" type="button" data-scene="heat">☀️ Siang terik</button>
+                  <button class="sim-preset" type="button" data-scene="green">🌿 Sekolah hijau</button>
+                </div>
+              </div>
+
+              <div class="sim-divider"></div>
+
+              <div class="sim-class-lab">
+                <div class="sim-section-label">03 / Tantangan kelas <span>Uji hipotesis</span></div>
+                <p>Jika cahaya meningkat dan kelembapan turun, apa prediksi yang paling masuk akal?</p>
+                <select id="simAnswer" class="sim-select" aria-label="Jawaban hipotesis">
+                  <option value="">Pilih prediksi...</option>
+                  <option value="rise">Suhu zona cenderung naik</option>
+                  <option value="fall">Suhu zona cenderung turun</option>
+                  <option value="same">Suhu tidak akan berubah</option>
+                </select>
+                <button id="simCheck" class="sim-check" type="button">Periksa jawaban</button>
+                <p id="simFeedback" class="sim-feedback" role="status"></p>
+              </div>
+
+              <button id="simReset" class="sim-reset" type="button" aria-label="Kembalikan simulasi ke kondisi awal">↺ Kembalikan kondisi awal</button>
+            </aside>
+
+            <div class="sim-panel sim-dashboard">
+              <div class="sim-metrics" aria-live="polite">
+                <div class="sim-metric"><small>Suhu mikro</small><strong><span id="simTemp">27.8</span><span>°C</span></strong><i></i></div>
+                <div class="sim-metric"><small>Kelembapan</small><strong><span id="simHumidity">58</span><span>%</span></strong><i></i></div>
+                <div class="sim-metric"><small>Cahaya</small><strong><span id="simLux">70</span><span>%</span></strong><i></i></div>
+                <div class="sim-metric"><small>Kualitas udara</small><strong><span id="simAirQuality">Baik</span></strong><i></i></div>
+              </div>
+
+              <div class="sim-chart-card">
+                <div class="sim-chart-head">
+                  <div><small>Digital twin / proyeksi</small><strong>Perubahan suhu 6 jam ke depan</strong></div>
+                  <span class="sim-chart-badge">SIMULATED DATA</span>
+                </div>
+                <svg class="sim-chart" viewBox="0 0 700 280" role="img" aria-labelledby="simChartTitle simChartDesc">
+                  <title id="simChartTitle">Grafik proyeksi perubahan suhu</title>
+                  <desc id="simChartDesc">Grafik akan berubah ketika nilai sensor pada panel kiri digeser.</desc>
+                  <defs>
+                    <linearGradient id="simAreaGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0" stop-color="#7fbd6b" stop-opacity=".55" />
+                      <stop offset="1" stop-color="#7fbd6b" stop-opacity="0" />
+                    </linearGradient>
+                  </defs>
+                  <path class="grid-line" d="M40 45H670M40 105H670M40 165H670M40 225H670" />
+                  <path class="grid-line" d="M40 25V225M166 25V225M292 25V225M418 25V225M544 25V225M670 25V225" opacity=".45" />
+                  <text class="axis-label" x="4" y="49">32°</text><text class="axis-label" x="4" y="109">28°</text><text class="axis-label" x="4" y="169">24°</text><text class="axis-label" x="4" y="229">20°</text>
+                  <path id="simArea" class="chart-area" d="M40 180 L166 160 L292 145 L418 135 L544 125 L670 115 L670 225 L40 225 Z"></path>
+                  <path id="simLine" class="chart-line" d="M40 180 L166 160 L292 145 L418 135 L544 125 L670 115"></path>
+                  <g id="simDots"></g>
+                  <text class="axis-label" x="35" y="250">Sekarang</text><text class="axis-label" x="158" y="250">+1 jam</text><text class="axis-label" x="284" y="250">+2 jam</text><text class="axis-label" x="410" y="250">+3 jam</text><text class="axis-label" x="536" y="250">+4 jam</text><text class="axis-label" x="640" y="250">+6 jam</text>
+                </svg>
+                <p id="simChartNote" class="sim-chart-note">Kondisi relatif stabil untuk kegiatan pengamatan.</p>
+              </div>
+
+              <div class="sim-bottom">
+                <div class="sim-score-card">
+                  <div class="sim-card-eyebrow">Skor keseimbangan zona</div>
+                  <div class="sim-score-wrap">
+                    <div id="simScoreRing" class="sim-score-ring" style="--score:78"><strong id="simScore">78</strong></div>
+                    <div class="sim-score-copy"><small>dari 100 poin</small><b id="simScoreText">Cukup sehat</b></div>
+                  </div>
+                </div>
+                <div class="sim-insight-card">
+                  <span class="sim-insight-icon" aria-hidden="true">✦</span>
+                  <div class="sim-card-eyebrow">Insight NatureSync</div>
+                  <h3 id="simInsightTitle">Zona siap diamati</h3>
+                  <p id="simInsightText">Data menunjukkan keseimbangan yang baik antara cahaya dan kelembapan. Saatnya siswa membuat catatan pengamatan.</p>
+                </div>
+              </div>
+              <p class="sim-footnote">* Nilai digunakan untuk pembelajaran dan dapat diganti dengan data sensor ESP32 pada tahap implementasi.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CARA KERJA -->
+      <section id="cara" class="cara">
+        <div
+          class="max-w-6xl mx-auto px-6 py-16 md:py-24 grid md:grid-cols-2 gap-10 md:gap-14"
+        >
+          <div>
+            <h2 class="text-4xl md:text-6xl">Lima langkah menuju lab hidup</h2>
+            <p class="muted mt-6 max-w-md">
+              Pilot pertama dirancang selama 6 bulan di sekolah percontohan.
+            </p>
+          </div>
+          <ol class="tl">
+            <li>
+              <h3 class="text-xl">Petakan zona</h3>
+              <p class="muted">
+                Bagi sekolah menjadi 4–6 zona, misalnya kebun sayur, pohon
+                peneduh, taman bunga, dan kolam atau biopori.
+              </p>
+            </li>
+            <li>
+              <h3 class="text-xl">Pasang sensor</h3>
+              <p class="muted">
+                Satu Node di tiap zona. Komponennya murah dan bisa dirakit klub
+                sains atau robotika.
+              </p>
+            </li>
+            <li>
+              <h3 class="text-xl">Hidupkan digital twin</h3>
+              <p class="muted">
+                Data sensor muncul di peta interaktif beserta tren historisnya.
+              </p>
+            </li>
+            <li>
+              <h3 class="text-xl">Aktifkan citizen science</h3>
+              <p class="muted">
+                Siswa mencatat flora dan fauna lewat ponsel. Catatan yang
+                divalidasi guru masuk ke twin.
+              </p>
+            </li>
+            <li>
+              <h3 class="text-xl">Masuk ke kurikulum</h3>
+              <p class="muted">
+                Guru menyusun proyek STEM dengan data nyata sebagai sumber
+                utama.
+              </p>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- MANFAAT -->
+      <section id="manfaat" class="max-w-6xl mx-auto px-6 py-16 md:py-24">
+        <h2 class="text-4xl md:text-6xl mb-12">Untuk guru dan untuk siswa</h2>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div class="benefit benefit--guru rounded-3xl p-8 md:p-10">
+            <h3 class="text-3xl">Guru</h3>
+            <ul class="mt-6 space-y-3 opacity-90">
+              <li>Modul proyek siap pakai, tidak mulai dari nol.</li>
+              <li>Data nyata untuk bahan ajar dan penilaian.</li>
+              <li>Tidak perlu membangun laboratorium baru.</li>
+              <li>Pendampingan dan pelatihan di awal.</li>
+            </ul>
+          </div>
+          <div class="benefit benefit--siswa rounded-3xl p-8 md:p-10">
+            <h3 class="text-3xl">Siswa</h3>
+            <ul class="mt-6 space-y-3">
+              <li>Belajar dari data sekolah sendiri, bukan hanya buku.</li>
+              <li>Merumuskan hipotesis dan mengujinya.</li>
+              <li>Merakit sensor dan mencatat spesies lokal.</li>
+              <li>Punya portofolio proyek STEM dari data nyata.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- DAFTAR -->
+      <section id="daftar" class="max-w-3xl mx-auto px-6 pb-16 md:pb-24">
+        <h2 class="text-4xl md:text-6xl">Ingin NatureSync di sekolahmu?</h2>
+        <p class="muted text-lg mt-5">
+          Isi formulir singkat ini. Kami akan menghubungimu untuk membahas
+          pilot.
+        </p>
+        <form id="f" class="mt-10 grid gap-4" novalidate>
+          <label class="grid gap-2 font-medium"
+            >Nama<input class="field" name="nama" required autocomplete="name"
+          /></label>
+          <label class="grid gap-2 font-medium"
+            >Peran<select class="field" name="peran">
+              <option>Guru</option>
+              <option>Siswa</option>
+              <option>Lainnya</option>
+            </select></label
+          >
+          <label class="grid gap-2 font-medium"
+            >Asal sekolah<input class="field" name="sekolah" required
+          /></label>
+          <label class="grid gap-2 font-medium"
+            >Email<input
+              class="field"
+              type="email"
+              name="email"
+              required
+              autocomplete="email"
+          /></label>
+          <button class="cta cta--dark" type="submit">Kirim pendaftaran</button>
+          <p id="msg" role="status" class="form-msg font-medium"></p>
+        </form>
+      </section>
+    </main>
+
+    <footer id="kontak" class="site-footer">
+      <div class="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-10">
+        <div>
+          <p class="footer-brand text-3xl font-semibold">NatureSync</p>
+          <p class="opacity-70 mt-3 max-w-sm">
+            Transformasi lingkungan sekolah menjadi Living Science Laboratory.
+          </p>
+        </div>
+        <div class="opacity-90">
+          <p class="font-semibold">Tim penyusun</p>
+          <p>Farid Rizky Adeval</p>
+          <p>Muhammad Dafa Ariady</p>
+          <p class="opacity-70 mt-2">Universitas Riau, Pekanbaru</p>
+          <a
+            class="underline mt-3 inline-block"
+            href="mailto:kontak@naturesync.example"
+            >kontak@naturesync.example</a
+          >
+        </div>
+      </div>
+    </footer>
+
+    <!-- JavaScript: satu file per fitur -->
+    <script>
+      /* ===== navbar.js ===== */
+      /* NAVBAR: bar jadi solid saat scroll + menu hamburger di HP */
+      (function(){
+        var bar=document.querySelector('.topbar'),
+            btn=document.getElementById('bb'),
+            menu=document.getElementById('mnav'),
+            icon=document.getElementById('bi'),
+            open=false;
+      
+        function update(){bar.classList.toggle('solid',scrollY>60||open)}
+        function setMenu(o){
+          open=o; menu.hidden=!o;
+          btn.setAttribute('aria-expanded',o);
+          btn.setAttribute('aria-label',o?'Tutup menu':'Buka menu');
+          icon.setAttribute('d',o?'M6 6l12 12M18 6L6 18':'M4 7h16M4 12h16M4 17h16');
+          update();
+        }
+        btn.addEventListener('click',function(){setMenu(!open)});
+        menu.addEventListener('click',function(e){if(e.target.tagName==='A')setMenu(false)});
+        addEventListener('keydown',function(e){if(e.key==='Escape'&&open)setMenu(false)});
+        addEventListener('resize',function(){if(innerWidth>=768&&open)setMenu(false)});
+        addEventListener('scroll',update);
+        update();
+      })();
+
+      /* ===== simulator.js ===== */
+      /* SIMULASI: dashboard interaktif untuk membaca perubahan lingkungan */
+      (function(){
+        var zones={
+          garden:{label:'Kebun sayur',light:70,moisture:58,air:28,temp:27.8,idealLight:68,idealMoisture:62},
+          pond:{label:'Kolam bio',light:52,moisture:76,air:20,temp:26.4,idealLight:55,idealMoisture:75},
+          park:{label:'Taman teduh',light:42,moisture:64,air:18,temp:26.1,idealLight:45,idealMoisture:65},
+          field:{label:'Lapangan',light:88,moisture:34,air:44,temp:30.1,idealLight:75,idealMoisture:45}
+        };
+        var scenes={
+          rain:{light:28,moisture:88,air:18},
+          heat:{light:96,moisture:24,air:55},
+          green:{light:64,moisture:70,air:12}
+        };
+        var currentZone='garden';
+        var zoneButtons=document.querySelectorAll('.sim-zone');
+        var sceneButtons=document.querySelectorAll('.sim-preset');
+        var light=document.getElementById('simLight');
+        var moisture=document.getElementById('simMoisture');
+        var air=document.getElementById('simAir');
+        var zoneLabel=document.getElementById('simZoneLabel');
+        var area=document.getElementById('simArea');
+        var line=document.getElementById('simLine');
+        var dots=document.getElementById('simDots');
+        var scoreRing=document.getElementById('simScoreRing');
+        var feedback=document.getElementById('simFeedback');
+        var xPoints=[40,166,292,418,544,670];
+
+        function clamp(value,min,max){return Math.max(min,Math.min(max,value))}
+        function number(value){return Number(value)||0}
+        function setRangeFill(input){
+          input.style.setProperty('--range-fill',number(input.value)+'%');
+        }
+        function setInputs(values){
+          light.value=values.light;
+          moisture.value=values.moisture;
+          air.value=values.air;
+          setRangeFill(light);setRangeFill(moisture);setRangeFill(air);
+        }
+        function activateScene(name){
+          sceneButtons.forEach(function(button){button.classList.toggle('is-active',button.dataset.scene===name)})
+        }
+        function activateZone(key){
+          currentZone=key;
+          zoneButtons.forEach(function(button){
+            var active=button.dataset.zone===key;
+            button.classList.toggle('is-active',active);
+            button.setAttribute('aria-selected',active?'true':'false');
+          });
+          zoneLabel.textContent=zones[key].label;
+          setInputs(zones[key]);
+          activateScene('');
+          render();
+        }
+        function calculate(){
+          var zone=zones[currentZone],l=number(light.value),m=number(moisture.value),a=number(air.value);
+          var temp=zone.temp+(l-zone.light)*.035+(50-m)*.018+(a-zone.air)*.012;
+          var lightScore=100-Math.abs(l-zone.idealLight)*1.05;
+          var moistureScore=100-Math.abs(m-zone.idealMoisture)*1.18;
+          var airScore=100-Math.max(0,a-12)*.92;
+          var temperatureScore=100-Math.abs(temp-(zone.temp+0.2))*11;
+          var score=Math.round(clamp(lightScore*.28+moistureScore*.3+airScore*.2+temperatureScore*.22,0,100));
+          var drift=(l-50)*.014+(50-m)*.009+(a-25)*.003;
+          var forecast=xPoints.map(function(_,index){return temp+(index*drift)+Math.sin(index*.82)*.16});
+          return {light:l,moisture:m,air:a,temp:temp,score:score,drift:drift,forecast:forecast};
+        }
+        function yFor(value){return clamp(225-((value-20)/12)*180,35,225)}
+        function renderChart(data){
+          var points=data.forecast.map(function(value,index){return xPoints[index]+' '+yFor(value).toFixed(1)});
+          var path='M'+points.join(' L');
+          line.setAttribute('d',path);
+          area.setAttribute('d',path+' L670 225 L40 225 Z');
+          dots.innerHTML=data.forecast.map(function(value,index){
+            return '<circle class="chart-dot" cx="'+xPoints[index]+'" cy="'+yFor(value).toFixed(1)+'" r="5"><title>'+value.toFixed(1)+'°C</title></circle>';
+          }).join('');
+        }
+        function render(){
+          var data=calculate();
+          document.getElementById('simLightValue').textContent=data.light;
+          document.getElementById('simMoistureValue').textContent=data.moisture;
+          document.getElementById('simAirValue').textContent=data.air;
+          document.getElementById('simTemp').textContent=data.temp.toFixed(1);
+          document.getElementById('simHumidity').textContent=data.moisture;
+          document.getElementById('simLux').textContent=data.light;
+          document.getElementById('simAirQuality').textContent=data.air<=35?'Baik':data.air<=65?'Waspada':'Tinggi';
+          document.getElementById('simScore').textContent=data.score;
+          scoreRing.style.setProperty('--score',data.score);
+          var scoreText=data.score>=80?'Sangat sehat':data.score>=60?'Cukup sehat':'Perlu perhatian';
+          document.getElementById('simScoreText').textContent=scoreText;
+          renderChart(data);
+
+          var title='Zona siap diamati',message='Data menunjukkan keseimbangan yang baik antara cahaya dan kelembapan. Saatnya siswa membuat catatan pengamatan.';
+          var note='Kondisi relatif stabil untuk kegiatan pengamatan.';
+          if(data.air>65){title='Udara perlu perhatian';message='Partikel udara cukup tinggi. Bandingkan zona ini dengan taman teduh dan cari kemungkinan sumber perbedaannya.';note='Proyeksi kualitas lingkungan menurun karena partikel udara tinggi.'}
+          else if(data.moisture<30){title='Tanah mulai kering';message='Kelembapan rendah dapat membuat tanaman stres. Uji apakah penambahan air mengubah suhu dan kondisi zona.';note='Proyeksi menghangat karena tanah lebih kering dan cahaya cukup kuat.'}
+          else if(data.moisture>82){title='Zona sangat basah';message='Kelembapan tinggi cocok untuk mengamati resapan, genangan, dan perubahan biota setelah hujan.';note='Proyeksi lebih sejuk karena kelembapan tinggi menahan kenaikan suhu.'}
+          else if(data.light>88){title='Paparan cahaya tinggi';message='Cahaya kuat menaikkan suhu mikro. Bandingkan dengan taman teduh untuk menguji peran kanopi pohon.';note='Proyeksi menghangat pada jam berikutnya karena paparan cahaya tinggi.'}
+          else if(data.drift<-.12){note='Proyeksi sedikit mendingin karena kelembapan membantu menahan panas.'}
+          else if(data.drift>.12){note='Proyeksi sedikit menghangat karena cahaya dan udara lebih kering.'}
+          document.getElementById('simInsightTitle').textContent=title;
+          document.getElementById('simInsightText').textContent=message;
+          document.getElementById('simChartNote').textContent=note;
+        }
+        zoneButtons.forEach(function(button){button.addEventListener('click',function(){activateZone(button.dataset.zone)})});
+        [light,moisture,air].forEach(function(input){
+          setRangeFill(input);
+          input.addEventListener('input',function(){
+            setRangeFill(input);activateScene('');render();
+          });
+        });
+        sceneButtons.forEach(function(button){
+          button.addEventListener('click',function(){
+            setInputs(scenes[button.dataset.scene]);activateScene(button.dataset.scene);render();
+          });
+        });
+        document.getElementById('simReset').addEventListener('click',function(){activateZone(currentZone);feedback.textContent='';document.getElementById('simAnswer').value=''})
+        document.getElementById('simCheck').addEventListener('click',function(){
+          var answer=document.getElementById('simAnswer').value;
+          if(!answer){feedback.style.color='#f4d487';feedback.textContent='Pilih prediksi terlebih dahulu.';return}
+          if(answer==='rise'){feedback.style.color='#c9e265';feedback.textContent='Benar. Cahaya tinggi dan tanah lebih kering biasanya membuat suhu mikro naik.'}
+          else{feedback.style.color='#ffb4a6';feedback.textContent='Belum tepat. Coba hubungkan cahaya, kelembapan, dan panas yang tersimpan di permukaan.'}
+        });
+        activateZone(currentZone);
+      })();
+
+      /* ===== form.js ===== */
+      /* FORM: validasi formulir pendaftaran (belum terhubung ke server) */
+      (function(){
+        var form=document.getElementById('f'),msg=document.getElementById('msg');
+        form.addEventListener('submit',function(e){
+          e.preventDefault();
+          var d=new FormData(form);
+          if(!d.get('nama')||!d.get('sekolah')||!/.+@.+\..+/.test(d.get('email')||'')){
+            msg.classList.add('is-error');
+            msg.textContent='Lengkapi nama, sekolah, dan email yang valid.';
+            return;
+          }
+          msg.classList.remove('is-error');
+          msg.textContent='Terima kasih, '+d.get('nama')+'. Pendaftaranmu tercatat.';
+          form.reset();
+        });
+      })();
+    </script>
+  </body>
+</html>
